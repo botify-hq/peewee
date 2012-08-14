@@ -2033,6 +2033,18 @@ class Column(object):
         return self.template % params
 
 
+class BinaryColumn(Column):
+    db_field = 'blob'
+
+    def db_value(self, value):
+        if value is not None:
+            return sqlite3.Binary(value)
+
+    def python_value(self, value):
+        if value is not None:
+            return value[:]
+
+
 class VarCharColumn(Column):
     db_field = 'string'
     template = '%(column_type)s(%(max_length)d)'
@@ -2289,6 +2301,10 @@ class Field(object):
 
     def __neg__(self):
         return (self.model, self.name, 'DESC')
+
+
+class BinaryField(Field):
+    column_class = BinaryColumn
 
 
 class CharField(Field):
